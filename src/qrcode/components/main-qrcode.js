@@ -6,6 +6,7 @@ const MainViewQrCode = (props) => {
   return(
     <>
       <QRCode
+        id="myqrcode"
         value={props.linkView}
         size={props.size}
         bgColor={props.bgColor}

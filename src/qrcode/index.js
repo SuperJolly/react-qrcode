@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Row, Col, Divider } from 'antd';
+import { Row, Col, Divider, Button } from 'antd';
 import CustomOptions from './components/custom-options';
 import LogoCustomer from './components/logo-customer';
 import MainViewQrCode from './components/main-qrcode';
@@ -11,6 +11,23 @@ function validURL(str) {
     return false;
   }
   return true;
+}
+
+function doDownload(url, fileName) {
+  const a = document.createElement('a');
+  a.download = fileName;
+  a.href = url;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+function downloadQRCode() {
+  const canvas = document.querySelector('canvas');
+  if (canvas) {
+    const url = canvas.toDataURL();
+    doDownload(url, 'QRCode.png');
+  }
 }
 
 function checkImageURL(url) {
@@ -51,6 +68,7 @@ const QrCodeApp = () => {
   }
 
   const changeLogo = (logo) => {
+    if (!logo) return setSourceLogo('');
     if(validURL(logo) && checkImageURL(logo)){
       setSourceLogo(logo);
     }
@@ -58,12 +76,14 @@ const QrCodeApp = () => {
 
   const changeWidthQrCode = (width) => {
     if(!isNaN(width)){
+      if (!width) return setWidthLogo(0);
       setWidthLogo(width);
     }
   }
 
   const changeHeightQrCode = (height) => {
     if(!isNaN(height)){
+      if (!height) return setHeightLogo(0);
       setHeightLogo(height);
     }
   }
@@ -98,9 +118,10 @@ const QrCodeApp = () => {
               />
             </Col>
           </Row>
+          <Row><a href="https://perthirtysix.com/how-the-heck-do-qr-codes-work" target="_blank">Documentation: How The Heck Do QR Codes Work?</a></Row>
           <Divider dashed />
           <Row style={{ margin: '30px 0px' }}>
-            <Col span={12} offset={6}>
+            <Col span={12} offset={3}>
               <MainViewQrCode
                 size={size}
                 bgColor={bgColor}
@@ -108,10 +129,17 @@ const QrCodeApp = () => {
                 linkView={linkView}
                 width={wLogo}
                 height={hLogo}
-                source={sourceLogo}
+                source={wLogo > 0 && hLogo > 0 ? sourceLogo : ''}
               />
+              { linkView && size > 0 && <Button
+                style={{ marginLeft: '20px' }}
+                type="primary"
+                onClick={downloadQRCode}
+              >
+                Download
+              </Button>}
             </Col>
-          </Row>        
+          </Row>
         </Col>
       </Row>
     </>
